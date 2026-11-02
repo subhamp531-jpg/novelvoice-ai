@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NovelVoice AI — Audiobook Studio</title>
+<meta name="theme-color" content="#0b1020">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{--bg:#0b1020;--panel:#121b30;--panel2:#182541;--line:#2b3a5b;--txt:#f0f4ff;--muted:#9baaca;--purple:#a78bfa;--cyan:#67e8f9;--green:#86efac;--danger:#fda4af}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 10% 0%,#29234f 0,transparent 35%),var(--bg);color:var(--txt);font:15px/1.5 Inter,system-ui,Segoe UI,sans-serif}button,input,textarea,select{font:inherit}button{border:0;border-radius:11px;padding:10px 14px;background:var(--purple);color:#17122b;font-weight:750;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#253554;color:var(--txt);border:1px solid var(--line)}.outline{background:transparent;color:var(--muted);border:1px solid var(--line)}.danger{background:#512b3b;color:#ffdbe1}.wrap{max-width:1280px;margin:auto;padding:0 22px 60px}header{max-width:1280px;margin:auto;padding:20px 22px;display:flex;align-items:center;justify-content:space-between}.brand{font-size:21px;font-weight:900;letter-spacing:-.7px;display:flex;align-items:center;gap:10px}.logo{height:38px;width:38px;border-radius:12px;background:linear-gradient(135deg,var(--purple),var(--cyan));display:grid;place-items:center;color:#111827}.header-right{display:flex;gap:9px;align-items:center}.pill{font-size:11px;color:var(--cyan);border:1px solid #31536b;border-radius:20px;padding:5px 9px}.hero{padding:24px 0 26px}.eyebrow{color:var(--cyan);font-size:11px;letter-spacing:2px;font-weight:850}.hero h1{font-size:clamp(34px,5vw,55px);line-height:1.05;letter-spacing:-2px;margin:10px 0;max-width:800px}.hero p{color:var(--muted);max-width:700px;font-size:16px;margin:0}.grid{display:grid;grid-template-columns: minmax(0,1.15fr) minmax(320px,.85fr);gap:17px;align-items:start}.panel{background:linear-gradient(180deg,#151f36,#10182a);border:1px solid var(--line);border-radius:19px;padding:19px;box-shadow:0 18px 50px #0002;margin-bottom:16px}.panel h2{font-size:17px;margin:0}.muted{color:var(--muted)}.small{font-size:12px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:5px}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:15px 0}.tab{background:transparent;border:1px solid var(--line);color:var(--muted);padding:8px 12px}.tab.active{background:#302a52;color:white;border-color:#6956ad}label{display:block;font-size:12px;font-weight:750;color:#cbd5e1;margin:12px 0 6px}input,textarea,select{width:100%;background:#0b1427;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:10px 11px;outline:none}input:focus,textarea:focus,select:focus{border-color:var(--purple)}textarea{min-height:160px;resize:vertical}.row{display:flex;gap:9px;align-items:center}.row>*{flex:1;min-width:0}.drop{border:1px dashed #58688c;background:#0c1528;border-radius:13px;text-align:center;padding:18px;color:var(--muted);transition:.15s;cursor:pointer}
+.drop.dragover{border-color:var(--cyan);background:#14253a;box-shadow:0 0 0 2px #67e8f933}
+.drop:focus{outline:2px solid var(--purple);outline-offset:3px}
+.drop input{margin-top:10px;cursor:pointer}.drop b{display:block;color:var(--txt);margin-bottom:3px}.status{font-size:12px;color:var(--green);min-height:18px;margin-top:8px}.warning{border:1px solid #6a562b;background:#2c2415;color:#f5dda0;padding:10px;border-radius:10px;font-size:11px;margin-top:12px}.success{color:var(--green)}.library-list{display:grid;gap:8px;margin-top:12px}.bookitem{background:#0c1528;border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;align-items:center;gap:10px}.bookicon{width:42px;height:50px;border-radius:8px;background:linear-gradient(140deg,#7059c7,#1b4059);display:grid;place-items:center;font-size:20px;flex-shrink:0}.bookmeta{min-width:0;flex:1}.bookmeta b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bookmeta small{color:var(--muted)}.bookitem button{padding:7px 9px;font-size:12px}.player{position:sticky;top:12px}.now{display:flex;gap:12px;align-items:center;background:#0c1528;border:1px solid var(--line);border-radius:13px;padding:12px;margin:14px 0}.cover{width:55px;height:66px;border-radius:9px;background:linear-gradient(145deg,#8068db,#173d56);display:grid;place-items:center;font-size:24px;flex-shrink:0}.now b{display:block}.progress{height:6px;border-radius:9px;background:#2a3855;overflow:hidden;margin:15px 0 5px}.bar{height:100%;width:0;background:linear-gradient(90deg,var(--purple),var(--cyan))}.time{display:flex;justify-content:space-between;color:var(--muted);font-size:11px}.controls{display:flex;justify-content:center;align-items:center;gap:9px;margin:15px 0}.play{width:52px;height:52px;border-radius:50%;font-size:18px}.settings{display:grid;grid-template-columns:1fr 1fr;gap:10px}.settings label{margin-top:8px}.chapter-list{display:grid;gap:6px;margin-top:9px;max-height:230px;overflow:auto}.chapter{display:flex;gap:8px;align-items:center;padding:8px 9px;border-radius:9px;background:#0c1528;border:1px solid transparent;font-size:12px}.chapter.active{border-color:#8069d6;background:#211e3d}.chapter span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chapter button{padding:5px 8px;font-size:11px}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.character{display:grid;grid-template-columns:1fr 1fr auto;gap:7px;margin:8px 0;align-items:end}.character button{padding:8px}.footer{text-align:center;color:#71809e;font-size:11px;padding:15px}.light{--bg:#eef2fb;--panel:#fff;--panel2:#e8edfa;--line:#cbd5e7;--txt:#17213a;--muted:#596781}.light body{background:var(--bg)}.light .panel{background:#fff}.light input,.light textarea,.light select,.light .drop,.light .now,.light .bookitem,.light .chapter{background:#f4f6fc;color:#17213a}.light .warning{background:#fff6df;color:#684b12}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.player{position:static}.wrap{padding:0 13px 40px}header{padding:15px}.hero{padding-top:14px}.panel{padding:15px}}@media(max-width:440px){.header-right .pill{display:none}.character{grid-template-columns:1fr 1fr}.character button{grid-column:2}.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">♫</div>NovelVoice <span style="color:var(--purple)">AI</span></div><div class="header-right"><span class="pill">HYBRID AUDIOBOOK STUDIO</span><button class="outline" id="themeBtn">☼ Theme</button></div></header>
+<div class="wrap">
+<section class="hero"><div class="eyebrow">YOUR STORIES, BEAUTIFULLY SPOKEN</div><h1>Turn any novel into your <span style="color:var(--purple)">own audiobook.</span></h1><p>Import a PDF, EPUB, TXT or public webpage. Listen with free browser voices, or generate expressive AI narration and download your chapters.</p></section>
+<div class="grid"><div>
+<section class="panel">
+<div class="section-head"><h2>1 · Discover novels online</h2><span class="pill">PUBLIC-DOMAIN CATALOGUE</span></div>
+<p class="small muted">Search and select books from Project Gutenberg's public-domain catalogue. Choose a result to import its full text into your audiobook studio.</p>
+<div class="row"><input id="catalogSearch" type="search" placeholder="Search title, author or subject…"><button id="catalogSearchBtn">Search novels</button></div>
+<div class="small muted" id="catalogStatus" aria-live="polite" style="margin-top:8px">Try “Jane Austen”, “Sherlock Holmes” or “adventure”.</div>
+<div id="catalogResults" class="library-list"></div>
+<div class="warning">This catalogue is focused on public-domain books. Other sites may have copyrighted novels, logins, paywalls or technical restrictions. NovelVoice will only import content that is publicly accessible and legally permitted; it will not bypass access controls.</div>
+</section>
+<section class="panel">
+<div class="section-head"><h2>2 · Add your own novel</h2><span class="small muted">PDF · EPUB · TXT · URL · Paste</span></div><div class="tabs"><button class="tab active" data-tab="file">Upload file</button><button class="tab" data-tab="url">Website URL</button><button class="tab" data-tab="paste">Paste text</button></div>
+<div id="filePane"><div class="drop" id="fileDrop" tabindex="0" role="button" aria-label="Choose or drop novel files">
+<b>Drop files here or tap to browse</b><span class="small">PDF, EPUB and TXT · You can select multiple files</span>
+<input type="file" id="fileInput" multiple accept=".pdf,.epub,.txt,text/plain,application/pdf,application/epub+zip">
+<div class="small muted" style="margin-top:7px">Maximum 50 MB per file · Text-based PDFs work best</div></div>
+<div class="row" style="margin-top:9px"><button id="pasteClipboard" class="secondary" type="button">Paste from clipboard</button><button id="clearInput" class="outline" type="button">Clear editor</button></div>
+<div id="importProgress" class="progress" hidden><div id="importProgressBar" class="bar"></div></div>
+<div id="importDetail" class="small muted" aria-live="polite"></div></div>
+<div id="urlPane" hidden><label>Novel webpage URL(s)</label><textarea id="urlInput" rows="4" style="min-height:100px" placeholder="Paste one chapter URL per line&#10;https://example.com/novel/chapter-1&#10;https://example.com/novel/chapter-2"></textarea><div class="small muted" style="margin:6px 0">Paste one public chapter URL per line (up to 20). NovelVoice will try to extract readable article text from each page and combine the chapters in order. Some websites block extraction or require permission/login.</div><button id="urlImport">Import chapter pages</button></div>
+<div id="pastePane" hidden><label>Paste story text</label><textarea id="pasteInput" placeholder="Paste a novel or chapter you own or are permitted to use…"></textarea><button id="pasteUse" style="margin-top:8px">Use pasted text</button></div>
+<div id="importStatus" class="status" aria-live="polite"></div>
+<label>Book title</label><input id="bookTitle" value="My audiobook" placeholder="Enter a title">
+<label>Story text <span class="muted" style="font-weight:400">— review and edit before narration</span></label><textarea id="storyText" style="min-height:185px" placeholder="Your imported story will appear here…"></textarea>
+<div class="row" style="margin-top:9px"><button id="detectChapters" class="secondary">Detect chapters</button><button id="saveBook">Save to library</button></div>
+<div class="warning">Please use novels and webpages you own, have permission to use, or are legally allowed to access. Scanned PDFs may need OCR before text can be extracted.</div>
+</section>
+<section class="panel"><div class="section-head"><h2>3 · Chapters & characters</h2><span id="chapterCount" class="small muted">No chapters yet</span></div><p class="small muted">Chapters are detected from common headings. You can also split a story manually.</p><div class="row"><button class="secondary" id="splitChapters">Split at headings</button><button class="outline" id="addChapter">Add current text as chapter</button></div><div id="chapterList" class="chapter-list"><div class="muted small">Import a novel and select Detect chapters.</div></div>
+<hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+<div class="section-head"><h2>Character voice studio</h2><button class="outline" id="addCharacter">+ Add character</button></div><p class="small muted">Assign narrator styles to character names. Character matching is a best-effort helper; review assignments before generating.</p><div id="characters"></div>
+<div class="small muted" style="margin-top:7px">For premium generation, each selected voice/style is applied to the matching text segment where possible.</div>
+</section>
+<section class="panel"><div class="section-head"><h2>4 · Your audiobook library</h2><span class="small muted" id="libraryCount">0 saved</span></div><input id="librarySearch" placeholder="Search your saved novels…"><div id="libraryList" class="library-list"><div class="small muted">Saved books will appear here on this device.</div></div></section>
+</div>
+<div>
+<section class="panel player"><div class="section-head"><h2>5 · Audiobook player</h2><span class="pill">AI-generated voice disclosure</span></div><div class="now"><div class="cover">♫</div><div style="min-width:0"><b id="nowTitle">No audiobook loaded</b><div class="small muted" id="nowMeta">Ready when you are</div></div></div>
+<div class="two"><div><label>Playback mode</label><select id="mode"><option value="browser">Free browser voice</option><option value="premium">Premium AI narration</option></select></div><div><label>Voice / narrator</label><select id="voice"></select></div></div>
+<div class="settings"><div><label>Speed</label><select id="speed"><option value=".8">0.8×</option><option value="1" selected>1× Normal</option><option value="1.15">1.15×</option><option value="1.3">1.3×</option><option value="1.5">1.5×</option><option value="1.75">1.75×</option><option value="2">2×</option></select></div><div><label>Pitch (browser)</label><select id="pitch"><option value=".8">Low</option><option value="1" selected>Normal</option><option value="1.2">High</option></select></div></div>
+<label>Emotion / narration direction <span class="muted">(premium)</span></label><select id="style"><option value="Read clearly and naturally, with expressive storytelling and thoughtful pauses.">Natural storyteller</option><option value="Speak warmly and gently, with a calm, intimate tone.">Warm and gentle</option><option value="Speak with suspense, dramatic tension, and deliberate pauses.">Suspenseful</option><option value="Speak energetically with bright, animated delivery.">Energetic</option><option value="Speak in a serious, measured, cinematic style.">Cinematic</option><option value="Speak softly and soothingly, like a bedtime story.">Bedtime story</option></select>
+<div class="progress"><div id="progressBar" class="bar"></div></div><div class="time"><span id="progressText">Not started</span><span id="progressPct">0%</span></div>
+<div class="controls"><button class="secondary" id="stopBtn">■</button><button class="play" id="playBtn">▶</button><button class="secondary" id="restartBtn">↺</button></div>
+<div class="row"><button class="secondary" id="prevBtn">← Previous</button><button class="secondary" id="nextBtn">Next →</button></div>
+<div class="status" id="playStatus">Add a novel, then choose a playback mode.</div>
+<div style="margin-top:15px"><button id="generateBtn" style="width:100%">Generate & download MP3 chapters</button><div class="small muted" style="margin-top:6px">Premium mode uses your configured server API. The browser-only mode does not create downloadable MP3 audio.</div></div>
+<div id="generationStatus" class="status"></div><div id="downloadArea"></div>
+</section>
+<section class="panel"><h2>6 · Listening progress</h2><p class="small muted">Your last book and chapter position are saved on this device.</p><div id="resumeInfo" class="small">No listening history yet.</div><button id="resumeBtn" class="secondary" style="margin-top:10px" disabled>Resume listening</button></section>
+<section class="panel"><h2>7 · Premium setup</h2><p class="small muted">The API key belongs on the server, never in this page.</p><div class="small">Premium narration status: <b id="apiStatus" class="muted">Checking server…</b></div><div class="warning">AI-generated voices are synthetic, not human recordings. API usage may incur charges. Keep API keys private and configure them in the server environment.</div></section>
+</div></div>
+<div class="footer">NovelVoice AI · Hybrid audiobook starter · Your local library is stored in this browser. Only send text to a premium provider when you choose premium generation.</div>
+</div>
+<script>
+if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const $=id=>document.getElementById(id);let voices=[],chapters=[],current=0,bookId=null,activeUtterance=null,playing=false,generated=[],browserPaused=false;
+const AI_VOICES=['alloy','ash','ballad','coral','echo','fable','marin','nova','onyx','sage','shimmer','verse','cedar'];
+const storeKey='novelvoice.library.v2',progressKey='novelvoice.progress.v2';
+function status(id,msg){$(id).textContent=msg}
+function setText(t,title){$('storyText').value=t.trim();if(title)$('bookTitle').value=title;detectChapters();status('importStatus','Imported. Review the text, then save or play.')}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));['file','url','paste'].forEach(k=>$(k+'Pane').hidden=k!==b.dataset.tab)});
+async function searchCatalog(){
+  const q=$('catalogSearch').value.trim();
+  if(!q)return status('catalogStatus','Enter a title, author or subject to search.');
+  $('catalogSearchBtn').disabled=true;
+  status('catalogStatus','Searching public-domain books…');
+  $('catalogResults').innerHTML='';
+  try{
+    const r=await fetch('/api/catalog/search?q='+encodeURIComponent(q));
+    if(!r.ok)throw Error((await r.text()).slice(0,200));
+    const data=await r.json();
+    const books=data.results||[];
+    if(!books.length){status('catalogStatus','No matching books found. Try another title or author.');return}
+    status('catalogStatus',`Found ${data.count||books.length} catalogue result(s). Select a book to import it.`);
+    books.forEach(book=>{
+      const d=document.createElement('div');d.className='bookitem';
+      const icon=document.createElement('div');icon.className='bookicon';icon.textContent='📖';
+      const meta=document.createElement('div');meta.className='bookmeta';
+      const title=document.createElement('b');title.textContent=book.title||'Untitled';
+      const author=document.createElement('small');author.textContent=(book.authors||[]).map(a=>a.name).join(', ')||'Unknown author';
+      const subjects=document.createElement('small');subjects.textContent=(book.subjects||[]).slice(0,2).join(' · ');
+      meta.append(title,author,subjects);
+      const choose=document.createElement('button');choose.textContent='Select';choose.onclick=()=>importCatalogBook(book.id,book.title,choose);
+      d.append(icon,meta,choose);$('catalogResults').append(d);
+    });
+  }catch(e){status('catalogStatus','Catalogue search failed: '+e.message+'. Make sure the NovelVoice server is running.')}
+  finally{$('catalogSearchBtn').disabled=false}
+}
+async function importCatalogBook(id,title,button){
+  button.disabled=true;button.textContent='Importing…';
+  status('catalogStatus','Downloading book text from the public-domain catalogue…');
+  try{
+    const r=await fetch('/api/catalog/book/'+encodeURIComponent(id));
+    if(!r.ok)throw Error((await r.text()).slice(0,240));
+    const book=await r.json();
+    const text=normaliseText(book.text||'');
+    if(!text)throw Error('No readable text was available for this catalogue entry.');
+    $('storyText').value=text;
+    $('bookTitle').value=book.title||title||'Imported novel';
+    bookId=null;
+    detectChapters();
+    status('catalogStatus','Imported “'+$('bookTitle').value+'”. Review the text and chapters, then save or play.');
+    status('importStatus','Novel imported from Project Gutenberg. Review before narration.');
+    $('storyText').scrollIntoView({behavior:'smooth',block:'center'});
+  }catch(e){status('catalogStatus','Could not import this book: '+e.message)}
+  finally{button.disabled=false;button.textContent='Select'}
+}
+$('catalogSearchBtn').onclick=searchCatalog;
+$('catalogSearch').addEventListener('keydown',e=>{if(e.key==='Enter')searchCatalog()});
+const MAX_FILE_BYTES=50*1024*1024;
+function showImportProgress(done,total,label){
+  $('importProgress').hidden=false;
+  $('importProgressBar').style.width=(total?Math.round(done/total*100):0)+'%';
+  $('importDetail').textContent=label||'';
+}
+function normaliseText(text){return String(text||'').replace(/\u0000/g,'').replace(/\r\n?/g,'\n').replace(/[ \t]+\n/g,'\n').replace(/\n{4,}/g,'\n\n\n').trim()}
+async function extractOneFile(file,onProgress){
+  const name=file.name||'Imported file';
+  const lower=name.toLowerCase();
+  if(file.size>MAX_FILE_BYTES)throw Error(name+' is larger than 50 MB.');
+  if(lower.endsWith('.txt')||file.type==='text/plain')return normaliseText(await file.text());
+  if(lower.endsWith('.pdf')||file.type==='application/pdf'){
+    if(!window.pdfjsLib)throw Error('PDF reader did not load. Check your internet connection and try again.');
+    const pdf=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;
+    const pages=[];
+    for(let i=1;i<=pdf.numPages;i++){
+      const page=await pdf.getPage(i),content=await page.getTextContent();
+      const line=content.items.map(x=>x.str).join(' ').replace(/\s+/g,' ').trim();
+      if(line)pages.push(line);
+      if(onProgress)onProgress(i,pdf.numPages);
+    }
+    const text=normaliseText(pages.join('\n\n'));
+    if(text.replace(/\s/g,'').length<80)throw Error('This PDF has little or no selectable text. It may be scanned; run OCR first or paste its text.');
+    return text;
+  }
+  if(lower.endsWith('.epub')||file.type==='application/epub+zip'){
+    if(!window.ePub)throw Error('EPUB reader did not load. Check your internet connection and try again.');
+    const book=ePub(await file.arrayBuffer());
+    await book.ready;
+    const items=book.spine.spineItems||[];
+    const sections=[];
+    for(let i=0;i<items.length;i++){
+      const item=items[i];
+      try{
+        const doc=await item.load(book.load.bind(book));
+        const body=doc.body||doc.documentElement;
+        const txt=body?body.innerText||body.textContent:'';
+        if(txt&&txt.trim())sections.push(normaliseText(txt));
+        if(onProgress)onProgress(i+1,items.length);
+        item.unload();
+      }catch(err){/* Ignore empty navigation/spine resources; other sections may still extract. */}
+    }
+    const text=normaliseText(sections.join('\n\n'));
+    if(!text)throw Error('No readable text was found inside this EPUB.');
+    return text;
+  }
+  throw Error(name+' is not supported. Choose a PDF, EPUB or TXT file.');
+}
+async function importFiles(files){
+  const chosen=[...files];
+  if(!chosen.length)return;
+  const unsupported=chosen.filter(f=>!/\.(pdf|epub|txt)$/i.test(f.name));
+  if(unsupported.length){status('importStatus','Unsupported file(s): '+unsupported.map(f=>f.name).join(', '));return}
+  let imported=[],errors=[];
+  $('fileInput').disabled=true;
+  try{
+    for(let i=0;i<chosen.length;i++){
+      const file=chosen[i];
+      status('importStatus','Importing '+(i+1)+' of '+chosen.length+': '+file.name);
+      showImportProgress(i,chosen.length,'Reading '+file.name+'…');
+      try{
+        const text=await extractOneFile(file,(page,total)=>showImportProgress(i,chosen.length,`Reading ${file.name} · page/section ${page} of ${total}`));
+        if(text)imported.push({name:file.name.replace(/\.[^.]+$/,''),text});
+        else errors.push(file.name+': no text found');
+      }catch(err){errors.push(file.name+': '+err.message)}
+      showImportProgress(i+1,chosen.length,'Finished '+(i+1)+' of '+chosen.length+' files');
+    }
+    if(imported.length){
+      const combined=imported.map(x=>`\\n\\n${x.name}\\n\\n${x.text}`).join('\\n\\n');
+      const existing=$('storyText').value.trim();
+      $('storyText').value=existing?existing+'\\n\\n'+combined.trim():combined.trim();
+      if(imported.length===1&&chosen.length===1)$('bookTitle').value=imported[0].name;
+      else if(imported.length>1)$('bookTitle').value='Imported novel collection';
+      detectChapters();
+      status('importStatus',`Imported ${imported.length} file(s) successfully${errors.length?`; ${errors.length} failed`:''}. Review the extracted text.`);
+    }else{
+      status('importStatus','No files could be imported. '+errors.join(' | '));
+    }
+    if(errors.length)$('importDetail').textContent='Some files need attention: '+errors.join(' · ');
+  }finally{
+    $('fileInput').disabled=false;
+    $('fileInput').value='';
+  }
+}
+$('fileInput').onchange=e=>importFiles(e.target.files);
+const drop=$('fileDrop');
+drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('dragover')});
+drop.addEventListener('dragleave',()=>drop.classList.remove('dragover'));
+drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('dragover');importFiles(e.dataTransfer.files)});
+drop.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('fileInput').click()}});
+$('pasteClipboard').onclick=async()=>{
+  try{const text=await navigator.clipboard.readText();if(!text.trim())return status('importStatus','Clipboard is empty. Copy some novel text first.');$('storyText').value=$('storyText').value.trim()?$('storyText').value.trim()+'\\n\\n'+text:text;detectChapters();status('importStatus','Text pasted from clipboard. Review before listening.')}
+  catch(_){status('importStatus','Clipboard access was blocked. Tap the text box and paste using your device menu.')}
+};
+$('clearInput').onclick=()=>{$('storyText').value='';$('pasteInput').value='';$('bookTitle').value='My audiobook';chapters=[];current=0;renderChapters();status('importStatus','Editor cleared.');$('importProgress').hidden=true;$('importDetail').textContent=''};
+$('pasteUse').onclick=()=>{if(!$('pasteInput').value.trim())return status('importStatus','Paste some text first.');const old=$('storyText').value.trim();$('storyText').value=old?old+'\\n\\n'+$('pasteInput').value.trim():$('pasteInput').value.trim();detectChapters();status('importStatus','Pasted text added to the editor. Review before listening.')};
+$('urlImport').onclick=async()=>{
+  const urls=$('urlInput').value.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  if(!urls.length)return status('importStatus','Paste at least one public chapter URL.');
+  if(urls.length>20)return status('importStatus','Please import no more than 20 chapter pages at a time.');
+  for(const u of urls){try{const parsed=new URL(u);if(!['http:','https:'].includes(parsed.protocol))throw Error();}catch(_){return status('importStatus','One of the lines is not a valid http/https URL: '+u)}}
+  $('urlImport').disabled=true;
+  const imported=[],errors=[];
+  try{
+    for(let i=0;i<urls.length;i++){
+      status('importStatus',`Extracting chapter page ${i+1} of ${urls.length}…`);
+      showImportProgress(i,urls.length,'Reading '+urls[i]);
+      try{
+        const r=await fetch('/api/extract-url',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:urls[i]})});
+        if(!r.ok)throw Error((await r.text()).slice(0,240));
+        const data=await r.json();
+        if(!data.text||data.text.trim().length<80)throw Error('Page did not contain enough readable text.');
+        imported.push({title:data.title||`Chapter ${i+1}`,text:data.text,url:urls[i]});
+      }catch(e){errors.push(urls[i]+': '+e.message)}
+      showImportProgress(i+1,urls.length,`Processed ${i+1} of ${urls.length} pages`);
+    }
+    if(imported.length){
+      const combined=imported.map((x,i)=>`Chapter ${i+1}: ${x.title}\n\n${x.text}`).join('\n\n');
+      const existing=$('storyText').value.trim();
+      $('storyText').value=existing?existing+'\n\n'+combined:combined;
+      if(!$('bookTitle').value||$('bookTitle').value==='My audiobook')$('bookTitle').value=imported[0].title||'Web novel';
+      detectChapters();
+      status('importStatus',`Imported ${imported.length} of ${urls.length} page(s). ${errors.length?errors.length+' page(s) could not be extracted. ':''}Review the text and chapter order.`);
+      $('importDetail').textContent=errors.length?'Not imported: '+errors.join(' · '):'Imported from '+imported.length+' public webpage(s).';
+    }else status('importStatus','No pages could be extracted. '+errors.join(' · '));
+  }finally{$('urlImport').disabled=false}
+};
+function detectChapters(){let text=$('storyText').value.trim();if(!text){chapters=[];renderChapters();return}const lines=text.split(/\n+/);let found=[],start=0,title='Introduction';for(let i=0;i<lines.length;i++){const line=lines[i].trim();if(/^(chapter\s+([0-9ivxlcdm]+|one|two|three|four|five|six|seven|eight|nine|ten)\b.*|prologue|epilogue|part\s+[0-9ivxlcdm]+.*)$/i.test(line)){const before=lines.slice(start,i).join('\n').trim();if(before)found.push({title, text:before});title=line;start=i+1}}const last=lines.slice(start).join('\n').trim();if(last)found.push({title,text:last});chapters=found.length>1?found:[{title:'Full audiobook',text}];current=0;renderChapters()}
+function renderChapters(){$('chapterCount').textContent=chapters.length+' chapter'+(chapters.length===1?'':'s');$('chapterList').innerHTML='';chapters.forEach((c,i)=>{const el=document.createElement('div');el.className='chapter'+(i===current?' active':'');const span=document.createElement('span');span.textContent=(i+1)+'. '+c.title;const play=document.createElement('button');play.textContent='Play';play.onclick=()=>{current=i;renderChapters();playCurrent()};const edit=document.createElement('button');edit.className='secondary';edit.textContent='Load';edit.onclick=()=>{$('storyText').value=c.text;$('bookTitle').value=$('bookTitle').value||c.title;current=i;status('importStatus','Loaded '+c.title+' into editor.');renderChapters()};el.append(span,play,edit);$('chapterList').append(el)})}
+$('detectChapters').onclick=detectChapters;$('splitChapters').onclick=detectChapters;$('addChapter').onclick=()=>{const t=$('storyText').value.trim();if(!t)return status('importStatus','Add text first.');chapters.push({title:'Added chapter '+(chapters.length+1),text:t});renderChapters()};
+function getLibrary(){try{return JSON.parse(localStorage.getItem(storeKey)||'[]')}catch(_){return []}}function saveLibrary(a){localStorage.setItem(storeKey,JSON.stringify(a))}
+function saveBook(){const text=$('storyText').value.trim();if(!text)return status('importStatus','Import or paste a novel first.');const title=$('bookTitle').value.trim()||'Untitled audiobook';const all=getLibrary();bookId=bookId||('book_'+Date.now());const item={id:bookId,title,text,chapters,updated:Date.now()};const ix=all.findIndex(x=>x.id===bookId);if(ix>=0)all[ix]=item;else all.unshift(item);saveLibrary(all);renderLibrary();$('nowTitle').textContent=title;$('nowMeta').textContent=text.split(/\s+/).length.toLocaleString()+' words · '+chapters.length+' chapters';status('importStatus','Saved to your library on this device.')}
+$('saveBook').onclick=saveBook;
+function renderLibrary(){const all=getLibrary(),q=$('librarySearch').value.toLowerCase();$('libraryCount').textContent=all.length+' saved';$('libraryList').innerHTML='';const filtered=all.filter(x=>x.title.toLowerCase().includes(q));if(!filtered.length){$('libraryList').innerHTML='<div class="small muted">No matching saved books.</div>';return}filtered.forEach(b=>{const d=document.createElement('div');d.className='bookitem';const icon=document.createElement('div');icon.className='bookicon';icon.textContent='♫';const meta=document.createElement('div');meta.className='bookmeta';const name=document.createElement('b');name.textContent=b.title;const small=document.createElement('small');small.textContent=(b.chapters?.length||1)+' chapters · '+new Date(b.updated).toLocaleDateString();meta.append(name,small);const open=document.createElement('button');open.textContent='Open';open.onclick=()=>loadBook(b.id);const del=document.createElement('button');del.className='danger';del.textContent='×';del.title='Delete from this device';del.onclick=()=>{saveLibrary(getLibrary().filter(x=>x.id!==b.id));renderLibrary()};d.append(icon,meta,open,del);$('libraryList').append(d)})}
+function loadBook(id){const b=getLibrary().find(x=>x.id===id);if(!b)return;bookId=id;$('bookTitle').value=b.title;$('storyText').value=b.text;chapters=b.chapters||[{title:'Full audiobook',text:b.text}];current=0;renderChapters();$('nowTitle').textContent=b.title;$('nowMeta').textContent=b.text.split(/\s+/).length.toLocaleString()+' words · '+chapters.length+' chapters';status('playStatus','Loaded from your library.');}
+$('librarySearch').oninput=renderLibrary;
+$('storyText').addEventListener('input',()=>{const t=$('storyText').value;const words=t.trim()?t.trim().split(/\\s+/).length:0;$('importDetail').textContent=t?`${words.toLocaleString()} words · ${t.length.toLocaleString()} characters`:'Paste or import text to begin.'});
+
+function loadVoices(){voices=speechSynthesis.getVoices();const s=$('voice');s.innerHTML='';if($('mode').value==='premium'){AI_VOICES.forEach(v=>{let o=document.createElement('option');o.value=v;o.textContent=v.charAt(0).toUpperCase()+v.slice(1)+' · AI voice';s.append(o)})}else{voices.forEach((v,i)=>{let o=document.createElement('option');o.value=i;o.textContent=v.name+' ('+v.lang+')';s.append(o)});if(!voices.length){let o=document.createElement('option');o.value='';o.textContent='Default device voice';s.append(o)}}}
+$('mode').onchange=()=>{loadVoices();status('playStatus',$('mode').value==='premium'?'Premium mode needs a configured server and API key.':'Using voices installed in your browser/device.')};if('speechSynthesis'in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
+const characterDefaults=[['Narrator','marin'],['Hero','ash'],['Heroine','coral']];
+function addCharacter(name='',voice='coral'){const d=document.createElement('div');d.className='character';const n=document.createElement('input');n.placeholder='Character name';n.value=name;const v=document.createElement('select');AI_VOICES.forEach(x=>{const o=document.createElement('option');o.value=x;o.textContent=x;v.append(o)});v.value=voice;const del=document.createElement('button');del.className='outline';del.textContent='Remove';del.onclick=()=>d.remove();d.append(n,v,del);$('characters').append(d)}
+characterDefaults.forEach(x=>addCharacter(...x));$('addCharacter').onclick=()=>addCharacter();
+function getCharacters(){return [...$('characters').querySelectorAll('.character')].map(d=>({name:d.querySelector('input').value.trim(),voice:d.querySelector('select').value})).filter(x=>x.name)}
+function voiceSegments(text){
+  const people=getCharacters(), map=new Map(people.map(x=>[x.name.toLocaleLowerCase(),x.voice]));
+  const fallback=$('voice').value||'marin', lines=text.split(/\\n+/), out=[];
+  for(const line of lines){
+    const m=line.match(/^\\s*([\\p{L}][\\p{L}\\d _'’-]{0,30}):\\s*(.+)$/u);
+    const voice=m&&map.get(m[1].trim().toLocaleLowerCase())||fallback;
+    const content=(m?m[2]:line).trim(); if(!content)continue;
+    const last=out[out.length-1];
+    if(last&&last.voice===voice)last.text+='\\n'+content;else out.push({voice,text:content});
+  }
+  return out.length?out:[{voice:fallback,text}];
+}
+function splitForSpeech(text,max=3600){const bits=text.split(/(?<=[.!?])\s+|\n+/);let out=[],buf='';for(const bit of bits){if((buf+' '+bit).length>max&&buf){out.push(buf.trim());buf=''}buf+=' '+bit}if(buf.trim())out.push(buf.trim());return out}
+function progressSave(){const p={bookId,title:$('bookTitle').value,chapter:current,updated:Date.now()};localStorage.setItem(progressKey,JSON.stringify(p));renderResume()}
+function renderResume(){let p;try{p=JSON.parse(localStorage.getItem(progressKey)||'null')}catch(_){}if(p){$('resumeInfo').textContent=p.title+' · Chapter '+(p.chapter+1)+' · saved '+new Date(p.updated).toLocaleString();$('resumeBtn').disabled=false}else{$('resumeInfo').textContent='No listening history yet.';$('resumeBtn').disabled=true}}
+$('resumeBtn').onclick=()=>{let p=JSON.parse(localStorage.getItem(progressKey)||'null');if(p?.bookId)loadBook(p.bookId);current=Math.min(p?.chapter||0,Math.max(0,chapters.length-1));renderChapters();playCurrent()};
+function updateProgress(){const pct=chapters.length?Math.round(current/chapters.length*100):0;$('progressBar').style.width=pct+'%';$('progressPct').textContent=pct+'%';$('progressText').textContent=chapters.length?'Chapter '+Math.min(current+1,chapters.length)+' of '+chapters.length:'Not started'}
+function playCurrent(){if(!chapters.length)detectChapters();if(!chapters.length)return status('playStatus','Import a novel first.');if($('mode').value==='premium')return premiumPlay();const text=chapters[current].text;if(!text)return; speechSynthesis.cancel();const parts=splitForSpeech(text,2200);let i=0;playing=true;$('playBtn').textContent='Ⅱ';status('playStatus','Playing with your device voice.');function next(){if(!playing)return;if(i>=parts.length){if(current<chapters.length-1){current++;renderChapters();updateProgress();progressSave();playCurrent()}else{playing=false;$('playBtn').textContent='▶';status('playStatus','Audiobook chapter complete.')}return}const u=new SpeechSynthesisUtterance(parts[i++]);const v=voices[Number($('voice').value)];if(v)u.voice=v;u.rate=Number($('speed').value);u.pitch=Number($('pitch').value);u.onend=next;u.onerror=()=>{playing=false;$('playBtn').textContent='▶';status('playStatus','Browser voice playback error.')};activeUtterance=u;speechSynthesis.speak(u)}updateProgress();progressSave();next()}
+async function premiumPlay(){const text=chapters[current]?.text;if(!text)return;const chunks=voiceSegments(text).flatMap(seg=>splitForSpeech(seg.text,3900).map(part=>({text:part,voice:seg.voice})));playing=true;$('playBtn').textContent='Ⅱ';status('playStatus','Generating premium AI audio…');try{for(const chunk of chunks){if(!playing)break;const res=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:chunk.text,voice:chunk.voice,speed:Number($('speed').value),instructions:$('style').value,characters:getCharacters()})});if(!res.ok)throw Error((await res.text()).slice(0,240));const blob=await res.blob(),url=URL.createObjectURL(blob),audio=new Audio(url);await new Promise((resolve,reject)=>{audio.onended=resolve;audio.onerror=reject;audio.play().catch(reject);window._nvAudio=audio})}if(playing){playing=false;$('playBtn').textContent='▶';status('playStatus','Premium chapter finished.')}}catch(e){playing=false;$('playBtn').textContent='▶';status('playStatus','Premium narration unavailable: '+e.message+' Check server setup.')} }
+$('playBtn').onclick=()=>{if($('mode').value==='browser'&&speechSynthesis.speaking){if(speechSynthesis.paused){speechSynthesis.resume();playing=true;$('playBtn').textContent='Ⅱ'}else{speechSynthesis.pause();playing=false;$('playBtn').textContent='▶'}return}if($('mode').value==='premium'&&window._nvAudio&&!window._nvAudio.paused){window._nvAudio.pause();playing=false;$('playBtn').textContent='▶';return}playCurrent()};
+$('stopBtn').onclick=()=>{playing=false;speechSynthesis.cancel();if(window._nvAudio)window._nvAudio.pause();$('playBtn').textContent='▶';status('playStatus','Stopped.')};
+$('restartBtn').onclick=()=>{current=0;renderChapters();playCurrent()};
+$('prevBtn').onclick=()=>{if(!chapters.length)return;current=Math.max(0,current-1);renderChapters();playCurrent()};
+$('nextBtn').onclick=()=>{if(!chapters.length)return;current=Math.min(chapters.length-1,current+1);renderChapters();playCurrent()};
+$('generateBtn').onclick=async()=>{if(!chapters.length)detectChapters();if(!chapters.length)return status('generationStatus','Import a novel first.');if($('mode').value!=='premium')return status('generationStatus','Select Premium AI narration to create MP3 files. Browser speech cannot be exported as MP3.');const zip=new JSZip();const folder=zip.folder(($('bookTitle').value||'audiobook').replace(/[^\w\-]+/g,'_'));let count=0;try{for(let ci=0;ci<chapters.length;ci++){const ch=chapters[ci],parts=voiceSegments(ch.text).flatMap(seg=>splitForSpeech(seg.text,3900).map(part=>({text:part,voice:seg.voice})));for(let pi=0;pi<parts.length;pi++){status('generationStatus','Generating '+ch.title+' · audio part '+(pi+1)+' of '+parts.length+'…');const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:parts[pi].text,voice:parts[pi].voice,speed:Number($('speed').value),instructions:$('style').value,characters:getCharacters()})});if(!r.ok)throw Error((await r.text()).slice(0,300));const blob=await r.blob();folder.file('chapter-'+String(ci+1).padStart(2,'0')+'-part-'+String(pi+1).padStart(2,'0')+'.mp3',blob);count++}}const out=await zip.generateAsync({type:'blob'});const a=document.createElement('a');a.href=URL.createObjectURL(out);a.download=( $('bookTitle').value||'novelvoice-audiobook').replace(/[^\w\-]+/g,'_')+'-mp3-chapters.zip';a.click();status('generationStatus','Finished! '+count+' MP3 segment(s) downloaded in a ZIP.');}catch(e){status('generationStatus','Generation failed: '+e.message+' Confirm server is running and OPENAI_API_KEY is configured.')}};
+async function checkApi(){try{const r=await fetch('/api/health');const j=await r.json();$('apiStatus').textContent=j.configured?'Connected · premium ready':'Server running · API key not configured';$('apiStatus').className=j.configured?'success':'muted'}catch(_){$('apiStatus').textContent='Not connected · run the included server';$('apiStatus').className='muted'}}
+$('themeBtn').onclick=()=>document.documentElement.classList.toggle('light');renderLibrary();renderResume();checkApi();
+</script>
+</body></html>
